@@ -38,35 +38,64 @@
 			/*.background1 div {
 				position: relative;
 			}*/
-			
-				.title {				
+			.lines{
+		      	width:100%;
+		      	display:flex;
+		      }
+		      .lines div{
+		        /*border:1px solid red;*/
+		        flex-grow:1;
+		      	display:flex;
+		      	align-items:center;
+		      	justify-content:center;
+		      }
+		      .lines div img{
+		      	width:80%;
+		      	height:80%;
+		      }
+				/*.title {				
 				position:relative; 
                 justify-content: center;
 				cursor: pointer;
 				margin: 0 auto;
-				/*transition:0.5s ease;*/
+				transition:0.5s ease;
 			}
-			
-			.forbid{
+			*/
+			.talk{
 				position:absolute; 
-				left: 780px;
+				left: 700px;
 				top:0px;
 				animation: action2 1.2s linear ;
 			}
 			@keyframes action2{
-			0%{top:0px}
-			15%{top:60px}
-			25%{top:100px}
-			33%{top:120px}
-			40%{top:85px}
-			50%{top:20px}
-			65%{top:50px}
-			72%{top:60px}
-			80%{top:70px}
-			90%{top:55px}
-			100%{top:40px}
+			0%{left:820px;opacity:0}
+			
+			50%{left:760px;opacity:0.5}
+			
+			100%{left:700px;opacity:1}
 		}
+			.tip{
+				position:absolute; 
+				left: 80px;
+				top:680px;
+			}
 		
+			/*.tips div{
+			    width: 100%;
+			    height: 70px;
+			   text-align：center;
+			    background: #f1f1f199;
+			    border-radius: 40px;
+			    position: relative;
+			    margin: 0 auto;
+			}*/
+			/* .*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Open Sans",sans-serif;
+}
+		/*
 			.entercase {
 				position:absolute; 
 				left:655px;
@@ -110,36 +139,29 @@
         	}
 			img.enterquiz:hover{
 			    transform: scale(1.1);
-			}
-        	*/
+			}<div class="tip">
+				<div class="txt">点击人物揭晓“TA”可能的真面目</div>
+			</div>*/
 		</style>
 		<script type="text/javascript" src="https://code.jquery.com/jquery-3.0.0.min.js"></script>
 		<script type="text/javascript">
 		
 	
-		
+	
 
     	</script>
 	</head>
 	<body>
 		<div class="main">
 			
-				<img class="title" src="img/img1/title.png" />
-				<img class="forbid" src="img/img1/forbid.png"  />
-				
-			
-			
-				<img class="pic1" src="img/img1/pic1.png"/>
-				
+				<div class="lines">
+			        <a href="index-case1.html"><div><img src="img/ img3/case1.png" /></div></a>
+			        <a href="index-case3.html"><div><img src="img/ img3/case3.png" /></div></a>
+			        <a href="index-case2.html"><div><img src="img/ img3/case2.png" /></div></a>
+			      </div>
+		<div class="talk"><img src="img/ img3/talk.png"></div>
+		<div class="tip"><img src="img/ img3/tip.png"></div>
 		
-	
-			
-				<a href="index-case.html"><img class="entercase" src="img/img1/entercase.png"/></a>
-				<a href="index-youxi.html"><img class="enterknow" src="img/img1/enterknow.png"/></a>	
-				<a href="index-quiz.html"><img class="enterquiz" src="img/img1/enterquiz.png"/></a>
-		
-			
-			
 		</div>
 	</body>
 </html>
