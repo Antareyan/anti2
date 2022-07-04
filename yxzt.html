@@ -1,0 +1,420 @@
+<html>
+        <link rel="stylesheet" type="text/css" href="css/index.css"/>
+        <script src="js/lufylegend-1.10.1.min.js"></script>
+        <script src="js/jquery-3.3.1.js"></script>
+<body>
+<div id="container">
+    <div id="game">
+        <audio id="player" src=""></audio>
+        <div id="info">
+            <div id="info_life"></div>
+            <div id="info_score">
+                <div class="info_score_num"><img src="img/img2/ksyx.png"></div>
+                <div class="info_score_num"><img src="img/img2/ksyx.png"></div>
+                <div class="info_score_num"><img src="img/img2/ksyx.png"></div>
+                <div class="info_score_num"><img src="img/img2/ksyx.png"></div>
+            </div>
+        </div>
+        <div id="main">
+            <div id="menu">
+                <div id="menu_title"><text>是男人就下100层</text></div>
+                <div id="menu_hero">
+                    <div id="menu_hero1"><img src="img/img2/ksyx.png"/></div>
+                    <div id="menu_hero2"></div>
+                    <div id="menu_hero3"><img src="img/img2/ksyx.png"/></div>
+                </div>
+                <div id="menu_button">
+                    <button id="menu_button1">开始游戏</button><br/>
+                    <button id="menu_button2">排行榜</button>
+                </div>
+            </div>
+            <div id="gamemain">
+                
+                <div id="hero"></div>
+                <div id="game_bg2"><img src="img2/ksyx.png"></div>
+            </div>
+            <div id="ranking">
+                <text>排行榜</text>
+                <div id="rank_table">
+                    <dl>
+                        <dt>排名</dt>
+                        <dd>1</dd>
+                        <dd>2</dd>
+                        <dd>3</dd>
+                        <dd>4</dd>
+                        <dd>5</dd>
+                    </dl>
+                    <dl>
+                        <dt>英雄大名</dt>
+                        <dd></dd>
+                        <dd></dd>
+                        <dd></dd>
+                        <dd></dd>
+                        <dd></dd>
+                    </dl>
+                    <dl>
+                        <dt>层数</dt>
+                        <dd></dd>
+                        <dd></dd>
+                        <dd></dd>
+                        <dd></dd>
+                        <dd></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    /**************************便捷函数**************************************/
+    function getRandom(min,max){//获取在区间[min.max]内的int数
+        var s;
+        s=parseInt(Math.random()*max+1);
+        while(s<min)
+        {
+        s=parseInt(Math.random()*max+1);
+        }
+        return s;
+    }
+    function onIt(hx,hy,fx,fy){
+        if(hx<=fx+60&&hx>=fx-32&&hy>=fy-32&&hy<=fy-31)
+            return 1;
+        else 
+            return 0;
+    }
+    var shansuoTimes=0;
+    function shansuo(){//闪烁3次
+        shansuoTimes++;
+        $('#hero').fadeTo(200,0.1);
+        $('#hero').fadeTo(200,1);
+        if(shansuoTimes<=3) 
+        setTimeout("shansuo()",400);
+        else
+            shansuoTimes=0;
+      }
+      function sleep(ms){//时间延迟函数
+          return new Promise(resolve =>setTimeout(resolve,ms))
+      }
+      async function test() {
+        console.log('Hello')
+        await sleep(1000)
+        console.log('world!')
+        }
+        test();
+    /**************************基础页面操作设置**************************************/
+    var hero_href=new Array(),hero_href_key=1;
+    for(var i=1;i<=15;i++){
+        hero_href[i]="css/hero/"+i+".png";
+    }
+    //js改变网页页面大小
+    document.body.style.zoom=.8;
+    //控制menu、gamemain、ranking的显示
+    $("#menu_button1").click(function(){
+        $("#menu").css('display','none');
+        $("#gamemain").css('display','block');
+        $("#ranking").css('display','none');
+        heroDie();
+        init(0,"hero",32,32,main);
+        check();
+        heroDown();
+        myfloor();
+        displayScore();
+        displayLife();
+    })
+    $("#menu_button2").click(function(){
+        $("#menu").css('display','none');
+        $("#gamemain").css('display','none');
+        $("#ranking").css('display','block');
+    })
+    //控制英雄的切换
+    $("#menu_hero1 img").click(function(){
+        if(hero_href_key>1) hero_href_key--;
+        heroDie();
+        main();
+    })
+    $("#menu_hero3 img").click(function(){
+        if(hero_href_key<15) hero_href_key++;
+        heroDie();
+        main();
+    })
+   //分数显示
+    var score_pic=new Array('css/img/0.png','css/img/1.png','css/img/2.png','css/img/3.png','css/img/4.png','css/img/5.png','css/img/6.png','css/img/7.png','css/img/8.png','css/img/9.png',);
+    var score=0;
+    function displayScore(){
+        var s=score;
+        var score0=s%10;
+        var score1=parseInt(s/10)%10;
+        var score2=parseInt(s/100)%10;
+        var score3=parseInt(s/1000);
+        $(".info_score_num img").eq(3).attr('src',score_pic[score0]);
+        $(".info_score_num img").eq(2).attr('src',score_pic[score1]);
+        $(".info_score_num img").eq(1).attr('src',score_pic[score2]);
+        $(".info_score_num img").eq(0).attr('src',score_pic[score3]);
+        setTimeout('displayScore()',50);
+    }
+    //生命条显示
+    var deadflag=false;
+    function displayLife(){
+        isdie();
+        $("#info_life").css('width',nowHP*8+'px');
+        if(nowHP<=4&&nowHP>0) $("#info_life").css('background','red');
+        if(nowHP==0&&deadflag==false) {playMusic(1);deadflag=true;}
+        setTimeout('displayLife()',50);
+    }
+    function playMusic(i) {
+        var player = $("#player")[0];
+        if(i==1)
+        {
+            player.src='css/sound/dead.mp3';
+            player.play();
+        }
+            
+        
+    }
+
+    /**************************游戏设置**************************************/
+    /***lufylegend框架封装英雄类*****/
+    var loader,anime,layer;
+    init(50,"menu_hero2",32,32,main);
+    function main(){
+        loader=new LLoader();
+        loader.addEventListener(LEvent.COMPLETE,loadBItmapdata);
+        loader.load(hero_href[hero_href_key],"bitmapData");
+    }
+    function loadBItmapdata(event){
+        var bitmapdata=new LBitmapData(loader.content,0,0,64,64);
+        var list=LGlobal.divideCoordinate(128,128,4,4);
+        layer=new LSprite();
+        addChild(layer);
+        anime=new LAnimation(layer,bitmapdata,list);
+        layer.addEventListener(LEvent.ENTER_FRAME,onframe);
+    }
+    function onframe(){
+        $(document).keydown(function(event){
+        if(event.which==39){
+            anime.setAction(2);
+        }
+        else if(event.which==37){
+            anime.setAction(1);
+        }
+        });
+        $(document).keyup(function(event){
+            anime.setAction(0);
+        });
+        anime.onframe();
+    }
+    function heroDie(){
+        layer.die();
+        layer.removeAllChild();
+    }
+    /***封装游戏背景类*****/
+    var bgHeight=0;
+    function background(){
+        bgHeight+=2;
+        $("#gamemain").css('background','url("css/img/gamemain_bg.png") 0px '+bgHeight+'px');
+        if(bgHeight>=550) bgHeight=0;//防止bgHeight过大
+        setTimeout('background()',50);
+    }
+    background();
+    /*********封装地板****************/
+    function floor(){
+        var that=this;
+        var img=$(new Image());
+        var floorx=Math.random()*370;
+        var floory=530;
+        this.createFloor1=function(){//地板1类
+            img.attr({
+                'src':'css/img/floor1.png',
+                'class':'floor',
+                'relative':0,
+                'type':1
+            });
+            img.css({
+                'margin-left':floorx+'px',
+                'margin-top':floory+'px',
+            });
+            
+            $("#gamemain").append(img);
+            this.run();
+        }
+        this.createFloor2=function(){//地板2类
+            img.attr({
+                'src':'css/img/floor2.png',
+                'class':'floor',
+                'relative':10,
+                'type':1
+            });
+            img.css({
+                'margin-left':floorx+'px',
+                'margin-top':floory+'px',
+            });
+            
+            $("#gamemain").append(img);
+            this.run();
+        }
+        this.createFloor3=function(){//地板3类
+            img.attr({
+                'src':'css/img/floor3.png',
+                'class':'floor',
+                'relative':0,
+                'type':1
+            });
+            img.css({
+                'margin-left':floorx+'px',
+                'margin-top':floory+'px',
+            });
+            
+            $("#gamemain").append(img);
+            this.run();
+        }
+        this.createFloor4=function(){//地板4类 会消失的地板
+            img.attr({
+                'src':'css/img/floor4in1.png',
+                'class':'floor',
+                'relative':0,
+                'type':2
+            });
+            img.css({
+                'margin-left':floorx+'px',
+                'margin-top':floory+'px',
+            });
+            
+            $("#gamemain").append(img);
+            this.run();
+        }
+        this.createFloor5=function(){//地板5类 会滚动的地板
+            img.attr({
+                'src':'css/img/floor5.gif',
+                'id':'floor5',
+                'class':'floor',
+                'relative':0,
+                'type':3
+            });
+            img.css({
+                'margin-left':floorx+'px',
+                'margin-top':floory+'px',
+            });
+            
+            $("#gamemain").append(img);
+            this.run();
+        }
+        this.run=function(){
+            if(floory>=-20)
+            {
+                floory-=2;
+                img.css('margin-top',floory+'px');
+                setTimeout(that.run,20);
+            }
+            else
+            {
+                img.css('display','none');
+                img.remove();
+                score++;
+            }
+        }
+    }
+    async function changefloor4($ppp) {//地板4类消失函数
+        $ppp.attr('src','css/img/floor4in2.png')
+        await sleep(300)
+        $ppp.attr("src","css/img/floor4in3.png")
+        await sleep(300)
+        $ppp.css('display','none');
+        $ppp.remove();
+        score++;
+        ontheFloor=false;heroDown();clearTimeout(up);
+        }
+
+    async function floor5Move1(fx){//地板5类左移英雄
+        while(position[0]+20>fx){
+        $('#hero').css('margin-left',position[0]+'px');
+        position[0]-=2;
+        await sleep(40);
+        }
+        ontheFloor=false;heroDown();clearTimeout(up);
+    }
+
+function myfloor(){//创建地板
+    var ppp=new floor();
+    if(getRandom(1,5)==1) ppp.createFloor1();
+    else if(getRandom(1,5)==2) ppp.createFloor2();
+    else if(getRandom(1,5)==3) ppp.createFloor3();
+    else if(getRandom(1,5)==4) ppp.createFloor4();
+    else if(getRandom(1,5)==5) ppp.createFloor5();
+    setTimeout('myfloor()',500);
+}
+
+
+/*********封装英雄（未封装原因：lufylegend插件已经生成了英雄）****************/
+    var position=new Array(0,10);//全局变量，hero的位置坐标
+    var maxHP=12,nowHP=12;//全局变量，最大HP，现在HP
+    var ontheFloor=false;//全局变量，是否在地板上
+    var gspeed=2;//全局变量，英雄下落速度，可随游戏时间增加
+    $(document).keydown(function(event){//对英雄移动的键盘操作
+            if(event.which==37){
+                ((position[0]-3)<0)?position[0]=0:position[0]-=3;
+                $("#hero").css('margin-left',position[0]+'px');
+            }
+            else if(event.which==39){
+                ((position[0]+3)>398)?position[0]=398:position[0]+=3;
+                $("#hero").css('margin-left',position[0]+'px');
+            }
+
+    });
+    var down,up,move;
+    function heroDown(){//英雄自由下落
+        position[1]+=gspeed;
+        $("#hero").css('margin-top',position[1]+'px');
+        down=setTimeout("heroDown()",20);
+    }
+    function heroUp(){//英雄随地板上升，此函数与floor类的run函数数值同步
+        position[1]-=2;
+        $("#hero").css('margin-top',position[1]+'px');
+        up=setTimeout("heroUp()",20);
+    }
+    function isdie(){//对英雄向上触碰、向下掉底直接死亡，设置nowHP=0，然后交给‘生命条显示’函数来做英雄死亡后的事件
+        var y=parseInt($("#hero").css('margin-top'));
+        if(y>=520||y<=9) nowHP=0;
+        
+    }
+ 
+/************************对是否落到地板上进行判断、处理****************************/
+    var StandX;
+    function check(){
+        var allfloor=$(".floor");
+        var n=allfloor.length;
+        for(var i=0;i<=n;i++){
+            var fx=parseInt(allfloor.eq(i).css("margin-left"));
+            var fy=parseInt(allfloor.eq(i).css("margin-top"));
+            var relativey=parseInt(allfloor.eq(i).attr("relative"));//将木板的relative值转化为int型
+            var type=parseInt(allfloor.eq(i).attr("type"));//将木板的type值转化为int型
+            var hx=position[0],hy=position[1];
+            if(onIt(hx,hy,fx,fy)&&(ontheFloor==false))
+                {
+                    ontheFloor=true;
+                    clearTimeout(down);
+                    position[1]+=relativey;//每个地板加了一个属性relative，是人物相对于木板的距离，方便带刺木板人物位置摆放
+                    if(relativey==10) {nowHP--;shansuo();}
+                    if(type==2){
+                        changefloor4(allfloor.eq(i));
+                    }
+                    else if(type==3){
+                            floor5Move1(fx);
+                    }
+                    heroUp();
+                    StandX=fx;
+                }
+            if((hx<StandX-32||hx>StandX+60)&&(ontheFloor==true))
+                {ontheFloor=false;heroDown();clearTimeout(up);}
+
+        }
+        setTimeout("check()",.5);
+    }
+    /************************对排行榜相关数据处理****************************/
+    /*var fso=new XMLHttpRequest(Scripting.FileSystemObject);
+    var f=fso.createtextfile("data.txt",2,true);
+    f.writeLine("wo shi di yi hang"); */
+
+    
+</script>
+</html>
