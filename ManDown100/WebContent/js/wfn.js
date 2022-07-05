@@ -201,7 +201,7 @@ WF.reg("sprite",function(){//人物、障碍物
 		this.lazy = 1000 / this.fps;//延迟
 		this.last = 0;//持续
 
-		this.moveLazy = 10;//延迟移动
+		this.moveLazy = 33;//延迟移动
 		this.moveLast = 0;//持续移动
 		
 		//当前动画

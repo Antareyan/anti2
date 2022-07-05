@@ -2,7 +2,7 @@
  * 游戏主逻辑入口文件，处理主要逻辑
  */
 var Main = {
-	gameInfo : {w:100,h:100},//游戏画面大小
+	gameInfo : {w:0,h:0},//游戏画面大小
 	cxt : null,//context  绘制图形的上下文对象
 	person : null,
 	timeQuene : null,//时间队列
@@ -205,12 +205,12 @@ var Main = {
 		WF.getId("js_end_flush").style.display = "block";
 		if(this.level >= 3){
 
-			WF.getId("js_end_flush").getElementsByTagName("p")[0].innerHTML = "很厉害,下了<label>"+this.level+"</label>层,知识点一定也记住了吧";
-			WF.getId("js_end_flush").getElementsByTagName("a")[0].innerHTML = "想更男人一点";
+			WF.getId("js_end_flush").getElementsByTagName("p")[0].innerHTML = "好厉害啊,下了<label>"+this.level+"</label>层";
+			WF.getId("js_end_flush").getElementsByTagName("a")[0].innerHTML = "再来一次";
 			WF.getId("js_end_flush").getElementsByTagName("span")[0].className = "icon happy";
 		}
 		else{
-			WF.getId("js_end_flush").getElementsByTagName("p")[0].innerHTML = "啊才下了<label>"+this.level+"</label>层";
+			WF.getId("js_end_flush").getElementsByTagName("p")[0].innerHTML = "不会吧,才下了<label>"+this.level+"</label>层";
 			WF.getId("js_end_flush").getElementsByTagName("a")[0].innerHTML = "再来一次";
 			WF.getId("js_end_flush").getElementsByTagName("span")[0].className = "icon";
 		}
